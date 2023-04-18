@@ -9,7 +9,7 @@ const protocol = 'juejin'
 const scheme = `${protocol}://`
 app.setAsDefaultProtocolClient(protocol)
 
-let urlParam = {};
+let urlParams = {};
 
 handleSchemeWakeUp(process.argv)
 
