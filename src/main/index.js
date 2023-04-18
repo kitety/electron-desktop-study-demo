@@ -1,23 +1,19 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path');
 const { URLSearchParams } = require('url');
+let mainWindow;
 
-const protocol = 'electron-desktop'
+
+
+const protocol = 'juejin'
 const scheme = `${protocol}://`
 app.setAsDefaultProtocolClient(protocol)
 
 let urlParam = {};
-// electron-desktop://a=1
-app.on('open-url', (event, url) => {
-    console.log('url: ', url);
 
-    const urlParams = new URLSearchParams(url.slice(scheme.length))
-    urlParam = Object.fromEntries(urlParams.entries())
-    console.log('urlParam: ', urlParam);
+handleSchemeWakeUp(process.argv)
 
-})
 
-let mainWindow;
 const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {
     app.quit()
@@ -26,20 +22,32 @@ if (!gotTheLock) {
         // Mac 平台只需要展示窗口即可
         mainWindow.restore()
         mainWindow.show()
-
-        // Windows 平台上需要判断新的实例是否被 scheme 唤起
-        const url = argv.find(v => v.startsWith(scheme))
-        if (url) { // 如果发现 electron-desktop:// 前缀，说明是通过 scheme 唤起
-            console.log(url)
-        }
+        handleSchemeWakeUp(argv)
     })
 }
+// juejin://
+// juejin://width=500&heigh=300
+app.on('open-url', (event, url) => {
+    handleSchemeWakeUp(url)
+})
 
 app.whenReady().then(() => {
     createWindow()
 })
-
 function createWindow() {
-    mainWindow = new BrowserWindow({ width: 800, height: 600 })
-    mainWindow.loadURL('https://www.juejin.cn')
+    const width = parseInt(urlParams.width) || 800
+    const height = parseInt(urlParams.height) || 600
+    if (mainWindow) {
+        mainWindow.setSize(width, height)
+    } else {
+        mainWindow = new BrowserWindow({ width, height })
+        mainWindow.loadURL('https://www.juejin.cn')
+    }
+}
+function handleSchemeWakeUp(argv) {
+    const url = [].concat(argv).find((v) => v.startsWith(scheme))
+    if (!url) return
+    const searchParams = new URLSearchParams(url.slice(scheme.length))
+    urlParams = Object.fromEntries(searchParams.entries())
+    if (app.isReady()) createWindow()
 }
