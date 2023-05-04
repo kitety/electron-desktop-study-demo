@@ -4,31 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Electron Desktop</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #ABE3F1;
-            -webkit-app-region: drag;
-        }
-
-        img {
-            width: 200px;
-        }
-
-        h1 {
-            margin: 50px;
-        }
-
-    </style>
 </head>
 
 <body>
-    <img src="https://img.zlib.cn/electron.webp" />
-    <h1>Electron 实战训练营</h1>
+    <p id="platform">操作系统：</p>
+    <p id="release">版本号：</p>
+    <button id="save">保存</button>
+    <script src="./index.js"></script>
 </body>
 
 </html>
